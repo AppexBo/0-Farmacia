@@ -35,6 +35,10 @@ patch(PosStore.prototype, {
 									if(combo_products[i]['is_required'])
 									{
 										sub_product['combo_qty'] = 1;
+										sub_product['maxima_cantidad_por_categoria'] = combo_products[i]['maxima_cantidad_por_categoria'];
+										//sub_product['minima_cantidad_por_categoria'] = combo_products[i]['minima_cantidad_por_categoria'];
+										sub_product['combo_product_category_id'] = combo_products[i]['category_id'];
+										sub_product['cantidades'] = combo_products[i]['cantidades'];
 										required_products.push(sub_product)
 									}
 									else{

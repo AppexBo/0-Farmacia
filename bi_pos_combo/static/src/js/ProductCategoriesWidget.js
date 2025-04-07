@@ -1,59 +1,73 @@
-/** @odoo-module */
+/** @odoo-module **/  
 
-import { ProductsWidget } from "@point_of_sale/app/screens/product_screen/product_list/product_list";
+import { PartnerListScreen } from "@point_of_sale/app/screens/partner_list/partner_list";
 import { patch } from "@web/core/utils/patch";
 import { usePos } from "@point_of_sale/app/store/pos_hook";
 
-patch(ProductsWidget.prototype,{
-
+patch(PartnerListScreen.prototype, {
     setup() {
-        super.setup();
-        this.pos = usePos();
+        super.setup(); // Importante para mantener el comportamiento original
+        this.pos = usePos(); // Obtiene la instancia actual del POS
+        console.log("[DEBUG] PartnerListScreen patched!");
     },
-    _updateSearch(event) {
-    	this.state.searchWord = event.detail;
-	},
-	get productsToDisplay() {
-		let self = this;
-		let prods = super.productsToDisplay;
-		let use_combo = self.pos.config.use_combo;
-		if (this.searchWord !== '') {
-            let products =  this.pos.db.search_product_in_category(
-                this.selectedCategoryId,
-                this.searchWord
-            );
-            var product_list = []
-                for (let product in products){
-                	if(products[product].is_pack == true){
-                		if(use_combo){
-                			product_list.push(products[product])
-                		}
 
-                	}else{
-                		product_list.push(products[product])
-                	}
-
-                }
-               	return product_list
+    get partners() {
+        console.log("[Erick] partners - query:", this.state.query || "(vacía)"); // Único console.log añadido
+        let res;
+        if (this.state.query && this.state.query.trim() !== "") {
+            res = this.pos.db.search_partner(this.state.query.trim());
         } else {
-           	let products =  this.pos.db.get_product_by_category(this.selectedCategoryId);
-        	
-            var product_list = []
-                for (let product in products){
-                	if(products[product].is_pack == true){
-                		if(use_combo){
-                			product_list.push(products[product])
-                		}
-
-                	}else{
-                		product_list.push(products[product])
-                	}
-
-                }
-               	return product_list
+            res = this.pos.db.get_partners_sorted(1000);
         }
-		
-	}
+        res.sort(function(a, b) {
+            return (a.name || "").localeCompare(b.name || "");
+        });
+        if (this.state.selectedPartner) {
+            const indexOfSelectedPartner = res.findIndex( (partner) => partner.id === this.state.selectedPartner.id);
+            if (indexOfSelectedPartner !== -1) {
+                res.splice(indexOfSelectedPartner, 1);
+            }
+            res.unshift(this.state.selectedPartner);
+        }
+        return res;
+    },
 
+    _clearSearch() {
+        console.log("[Erick] _clearSearch ejecutado"); // Único console.log añadido
+        this.searchWordInputRef.el.value = "";
+        this.state.query = "";
+    },
 
+    async searchPartner() {
+        console.log("[Erick] searchPartner - query:", this.state.query); // Único console.log añadido
+        if (this.state.previousQuery != this.state.query) {
+            this.state.currentOffset = 0;
+        }
+        const result = await this.getNewPartners();
+        this.pos.addPartners(result);
+        if (this.state.previousQuery == this.state.query) {
+            this.state.currentOffset += result.length;
+        } else {
+            this.state.previousQuery = this.state.query;
+            this.state.currentOffset = result.length;
+        }
+        return result;
+    },
+
+    async getNewPartners() {
+        console.log("[Erick] getNewPartners - query:", this.state.query); // Único console.log añadido
+        let domain = [];
+        const limit = 30;
+        if (this.state.query) {
+            const search_fields = ["name", "parent_name", "phone", "mobile", "email", "barcode", "street", "zip", "city", "state_id", "country_id", "vat", ];
+            domain = [...Array(search_fields.length - 1).fill('|'), ...search_fields.map(field => [field, "ilike", this.state.query + "%"])];
+        }
+        const result = await this.orm.silent.call("pos.session", "get_pos_ui_res_partner_by_params", 
+            [odoo.pos_session_id], {
+            domain,
+            limit: limit,
+            offset: this.state.currentOffset
+        });
+        return result;
+    }
 });

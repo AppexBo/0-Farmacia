@@ -162,12 +162,14 @@ class RelatedPosStock(models.Model):
 		array = json.loads(cadena)
 		total_combo_qty = 0
 
-		_logger.info("=entro?========================================================================")
+		#_logger.info("=entro?========================================================================")
 		for product in array:
-			_logger.info(f"Procesando producto: {product}")
 			try:
 				if item.id == product.get('id'):
 					total_combo_qty += product.get('combo_qty', 0) * product.get('cantidades', 1) 
+					#_logger.info(f"Procesando producto: {product}")
+					#_logger.info(f"Erick - combo_qty {product.get('combo_qty', 0)}")
+					#_logger.info(f"Erick - cantidades {product.get('cantidades', 1)}")
 			except Exception as e:
 				_logger.error(f"Error al obtener el campo {field_name}: {e}")
 		#_logger.info("=aa========================================================================")
@@ -181,7 +183,7 @@ class RelatedPosStock(models.Model):
 		if existing_move:
 			# Actualizar la cantidad del movimiento existente
 			existing_move.product_uom_qty += abs(total_combo_qty)
-			_logger.info(f"Actualizado movimiento existente para {item.name}, cantidad total: {existing_move.product_uom_qty}")
+			#_logger.info(f"Actualizado movimiento existente para {item.name}, cantidad total: {existing_move.product_uom_qty}")
 			return {
 				'name': first_line.name,
 				'product_uom': item.uom_id.id,
@@ -231,8 +233,8 @@ class RelatedPosStock(models.Model):
 			#			_logger.error(f"Error al obtener el campo {field_name}: {e}")
 			#_logger.info("=aa========================================================================")
 
-			_logger.info("=aa========================================================================")
-			_logger.info(order_lines)
+			#_logger.info("=aa========================================================================")
+			#_logger.info(order_lines)
 			first_line = order_lines[0]
 			current_move = self.env['stock.move'].create(
 				self._prepare_stock_move_vals(first_line, order_lines)

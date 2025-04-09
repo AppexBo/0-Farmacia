@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" inherit_id="point_of_sale_template"
+           xml:space="preserve">
+    <!-- Template for adding clear icon in orderline -->
+    <t t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <xpath expr="//li[hasclass('orderline')]/div[hasclass('d-flex')]/div[hasclass('price')]"
+               position="after">
+            <t>
+                <!--<i style="margin-left: 3%;" id="clear_icon"
+                   class="fa fa-times-circle"
+                   t-on-click="(el) => this.clear_button_fun(el)"/>
+                   -->
+
+                <!--<button style="background-color: #28a745; border-color: #28a745; color: white; margin-right: 5px;"
+                        class="btn btn-light btn-sm"
+                        t-on-click="increase_quantity"
+                        t-attf-onmouseover="this.style.backgroundColor='#218838'; this.style.borderColor='#1e7e34';"
+                        t-attf-onmouseout="this.style.backgroundColor='#28a745'; this.style.borderColor='#28a745';">
+                    <i class="fa fa-plus"/>
+                </button>
+                -->
+                <button style="background-color: #dc3545; border-color: #dc3545; color: white; margin-right: 5px;"
+                        class="btn btn-light btn-sm"
+                        t-on-click="decrease_quantity"
+                        t-attf-onmouseover="this.style.backgroundColor='#c82333'; this.style.borderColor='#bd2130';"
+                        t-attf-onmouseout="this.style.backgroundColor='#dc3545'; this.style.borderColor='#dc3545';">
+                    <i class="fa fa-minus"/>
+                </button>
+
+                <button style="margin-left: 3%; background-color: #dc3545; border-color: #dc3545; color: white;"
+                        class="btn btn-light btn-sm"
+                        t-on-click="(el) => this.clear_button_fun(el)"
+                        t-attf-onmouseover="this.style.backgroundColor='#c82333'; this.style.borderColor='#c82333';"
+                        t-attf-onmouseout="this.style.backgroundColor='#dc3545'; this.style.borderColor='#dc3545';">
+                    <i class="fa fa-trash"/>
+                </button>
+            </t>
+        </xpath>
+    </t>
+</templates>

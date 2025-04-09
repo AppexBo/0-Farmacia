@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="qhantuy_device_view_form" model="ir.ui.view">
+        <field name="name">qhantuy.device.view.form</field>
+        <field name="model">qhantuy.device</field>
+        <field name="arch" type="xml">
+            <form>
+            <header>
+                <field name="status" widget="statusbar" options="{'clickable': True}"/>
+            </header>
+                <sheet>
+                    <!--
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-exchange" string="Transaction" name="show_form_and_tree" type="object" />
+                    </div>
+                    -->
+                    <div class="oe_title" name="event_type_title">
+                        <h1><field name="name" class="mb-2"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="currency_id" />
+                            <field name="company_id" />
+                        </group>
+                        <group>
+                            <field name="business_api_tocken" />
+                            <field name="app_key" />
+                            <field name="base_url" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="qhantuy_device_view_tree" model="ir.ui.view">
+        <field name="name">qhantuy.device.view.tree</field>
+        <field name="model">qhantuy.device</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="currency_id" />
+                <field name="company_id" />
+                <field name="business_api_tocken" />
+                <field name="app_key" />
+                <field name="base_url" />
+                <field name="status" widget="badge" decoration-info="status == 'pending'" decoration-success="status == 'active'" decoration-danger="status == 'inactive'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="qhantuy_device_action" model="ir.actions.act_window">
+        <field name="name">Qhantuy Device</field>
+        <field name="res_model">qhantuy.device</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="qhantuy_device_menu"
+        name="Qhantuy Device"
+        action="qhantuy_device_action"
+        parent="point_of_sale.menu_point_config_product"/>
+
+</odoo>
